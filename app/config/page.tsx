@@ -8,6 +8,7 @@ import NavHeader from "@/components/NavHeader";
 import ConfigChip, { ConfigSection } from "@/components/ConfigChip";
 import PageTransition from "@/components/PageTransition";
 import { styles, genres, durations, defaultConfig } from "@/lib/data";
+import { VisualStyle, Genre } from "@/types";
 import { ChevronRight, ChevronLeft } from "lucide-react";
 
 export default function ConfigPage() {
@@ -16,6 +17,7 @@ export default function ConfigPage() {
   const [identityName, setIdentityName] = useState("视频创作者");
 
   useEffect(() => {
+    // Load saved data
     const savedIdentity = localStorage.getItem("framex_identity_name");
     const savedConfig = localStorage.getItem("framex_config");
     
@@ -33,6 +35,14 @@ export default function ConfigPage() {
     localStorage.setItem("framex_config", JSON.stringify(newConfig));
   };
 
+  const handleNext = () => {
+    router.push("/create/");
+  };
+
+  const handleBack = () => {
+    router.push("/identity/");
+  };
+
   return (
     <main className="relative min-h-screen overflow-hidden">
       <GrainBackground />
@@ -42,6 +52,7 @@ export default function ConfigPage() {
 
         <PageTransition className="flex-1 px-6 lg:px-10 py-8 pt-24">
           <div className="max-w-4xl mx-auto">
+            {/* Header */}
             <motion.div
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
@@ -58,51 +69,65 @@ export default function ConfigPage() {
               </p>
             </motion.div>
 
+            {/* Config Grid */}
             <motion.div
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.1 }}
-              className="grid grid-cols-1 md:grid-cols-3 gap-5 mb-8"
+              className="grid grid-cols-1 md:grid-cols-3 gap-5 mb-12"
             >
+              {/* Visual Style */}
               <ConfigSection title="Visual Style" subtitle="视觉风格">
                 {styles.map((s) => (
                   <ConfigChip
                     key={s.id}
                     label={s.name}
                     selected={config.style === s.id}
-                    onClick={() => saveConfig({ style: s.id, styleName: s.name })}
+                    onClick={() => saveConfig({ 
+                      style: s.id, 
+                      styleName: s.name 
+                    })}
                   />
                 ))}
               </ConfigSection>
 
+              {/* Genre */}
               <ConfigSection title="Genre" subtitle="类型">
                 {genres.map((g) => (
                   <ConfigChip
                     key={g.id}
                     label={g.name}
                     selected={config.genre === g.id}
-                    onClick={() => saveConfig({ genre: g.id, genreName: g.name })}
+                    onClick={() => saveConfig({ 
+                      genre: g.id, 
+                      genreName: g.name 
+                    })}
                   />
                 ))}
               </ConfigSection>
 
+              {/* Duration */}
               <ConfigSection title="Duration" subtitle="时长">
                 {durations.map((d) => (
                   <ConfigChip
                     key={d.value}
                     label={d.name}
                     selected={config.duration === d.value}
-                    onClick={() => saveConfig({ duration: d.value, durationName: d.name })}
+                    onClick={() => saveConfig({ 
+                      duration: d.value, 
+                      durationName: d.name 
+                    })}
                   />
                 ))}
               </ConfigSection>
             </motion.div>
 
+            {/* Summary */}
             <motion.div
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.2 }}
-              className="p-6 rounded-2xl border border-border bg-gradient-to-b from-white/[0.03] to-white/[0.01] mb-8"
+              className="p-6 rounded-2xl border border-border bg-gradient-to-b from-white/[0.03] to-white/[0.01] mb-12"
             >
               <h3 className="text-xs font-medium text-gold tracking-wider uppercase mb-4">
                 Current Configuration
@@ -127,6 +152,7 @@ export default function ConfigPage() {
               </div>
             </motion.div>
 
+            {/* Navigation */}
             <motion.div
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
@@ -134,7 +160,7 @@ export default function ConfigPage() {
               className="flex justify-between"
             >
               <motion.button
-                onClick={() => router.push("/identity/")}
+                onClick={handleBack}
                 className="flex items-center gap-2 px-6 py-3 rounded-xl border border-border text-cream-dim hover:text-cream hover:border-gold/40 transition-all"
                 whileHover={{ x: -4 }}
                 whileTap={{ scale: 0.98 }}
@@ -144,12 +170,9 @@ export default function ConfigPage() {
               </motion.button>
 
               <motion.button
-                onClick={() => router.push("/create/")}
-                className="flex items-center gap-2 px-8 py-3 bg-gradient-to-r from-gold to-gold-bright rounded-xl font-semibold text-void"
-                whileHover={{ 
-                  scale: 1.02, 
-                  boxShadow: '0 10px 30px rgba(212,168,75,0.3)' 
-                }}
+                onClick={handleNext}
+                className="flex items-center gap-2 px-8 py-3 bg-brand-red hover:bg-brand-red-hover rounded-xl font-semibold text-cream vibe-hover glow-red"
+                whileHover={{ scale: 1.02 }}
                 whileTap={{ scale: 0.98 }}
               >
                 下一步
