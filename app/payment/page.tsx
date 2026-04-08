@@ -1,11 +1,11 @@
 "use client";
 
-import { useRouter } from "next/navigation";
+import { useState } from "react";
 import { motion } from "framer-motion";
 import GrainBackground from "@/components/GrainBackground";
 import NavHeader from "@/components/NavHeader";
 import PageTransition, { StaggerContainer, StaggerItem } from "@/components/PageTransition";
-import { Check, Sparkles, Zap, Building2 } from "lucide-react";
+import { Check, Sparkles, Building2 } from "lucide-react";
 
 const plans = [
   {
@@ -58,7 +58,29 @@ const plans = [
 ];
 
 export default function PaymentPage() {
-  const router = useRouter();
+  const [upgrading, setUpgrading] = useState<string | null>(null);
+
+  const handleUpgrade = (planId: string) => {
+    if (planId === "starter") return;
+    
+    setUpgrading(planId);
+    
+    if (planId === "pro") {
+      // 模拟支付流程
+      setTimeout(() => {
+        alert("🎉 感谢支持！\n\nPro 会员激活成功，所有功能已解锁。");
+        setUpgrading(null);
+      }, 1500);
+    } else if (planId === "studio") {
+      // 打开邮箱
+      window.location.href = "mailto:dumccchr@icloud.com?subject=FrameX Studio 企业版咨询";
+      setUpgrading(null);
+    }
+  };
+
+  const handleEnterprise = () => {
+    window.location.href = "mailto:dumccchr@icloud.com?subject=FrameX 企业定制方案咨询";
+  };
 
   return (
     <main className="relative min-h-screen overflow-hidden">
@@ -125,6 +147,8 @@ export default function PaymentPage() {
                     </ul>
 
                     <motion.button
+                      onClick={() => handleUpgrade(plan.id)}
+                      disabled={plan.id === "starter" || upgrading === plan.id}
                       className={`w-full py-3 rounded-xl font-semibold transition-all ${
                         plan.popular
                           ? "bg-gradient-to-r from-gold to-gold-bright text-void"
@@ -132,10 +156,10 @@ export default function PaymentPage() {
                           ? "bg-white/10 text-cream cursor-default"
                           : "border border-gold/50 text-gold hover:bg-gold/10"
                       }`}
-                      whileHover={plan.id !== "starter" ? { scale: 1.02 } : {}}
-                      whileTap={plan.id !== "starter" ? { scale: 0.98 } : {}}
+                      whileHover={plan.id !== "starter" && !upgrading ? { scale: 1.02 } : {}}
+                      whileTap={plan.id !== "starter" && !upgrading ? { scale: 0.98 } : {}}
                     >
-                      {plan.cta}
+                      {upgrading === plan.id ? "处理中..." : plan.cta}
                     </motion.button>
                   </motion.div>
                 </StaggerItem>
@@ -158,8 +182,10 @@ export default function PaymentPage() {
                 </div>
               </div>
               <motion.button
+                onClick={handleEnterprise}
                 className="px-6 py-3 rounded-xl border border-gold/50 text-gold hover:bg-gold/10 transition-all"
                 whileHover={{ scale: 1.02 }}
+                whileTap={{ scale: 0.98 }}
               >
                 联系我们
               </motion.button>
