@@ -14,6 +14,7 @@ export default function StoryboardPage() {
   const router = useRouter();
   const [script, setScript] = useState<ScriptScene[]>([]);
   const [shots, setShots] = useState<Shot[]>([]);
+  const [isExporting, setIsExporting] = useState(false);
 
   useEffect(() => {
     const savedScript = localStorage.getItem("framex_script");
@@ -22,6 +23,34 @@ export default function StoryboardPage() {
     if (savedScript) setScript(JSON.parse(savedScript));
     if (savedShots) setShots(JSON.parse(savedShots));
   }, []);
+
+  const handleExport = () => {
+    setIsExporting(true);
+    
+    // 生成导出内容
+    const exportData = {
+      script,
+      shots,
+      exportedAt: new Date().toISOString(),
+    };
+    
+    // 创建下载
+    const blob = new Blob([JSON.stringify(exportData, null, 2)], { type: 'application/json' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `framex-storyboard-${Date.now()}.json`;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+    
+    setTimeout(() => setIsExporting(false), 1000);
+  };
+
+  const handlePreview = () => {
+    alert("预览功能开发中...\n\n将播放分镜动画预览");
+  };
 
   return (
     <main className="relative min-h-screen overflow-hidden">
@@ -48,18 +77,23 @@ export default function StoryboardPage() {
               
               <div className="flex gap-3">
                 <motion.button
+                  onClick={handlePreview}
                   className="flex items-center gap-2 px-4 py-2 rounded-lg border border-border text-cream-dim hover:text-cream hover:border-gold/40 transition-all"
                   whileHover={{ scale: 1.02 }}
+                  whileTap={{ scale: 0.98 }}
                 >
                   <Play className="w-4 h-4" />
                   预览
                 </motion.button>
                 <motion.button
-                  className="flex items-center gap-2 px-4 py-2 rounded-lg bg-gold text-void font-medium"
+                  onClick={handleExport}
+                  disabled={isExporting}
+                  className="flex items-center gap-2 px-4 py-2 rounded-lg bg-gold text-void font-medium disabled:opacity-50"
                   whileHover={{ scale: 1.02 }}
+                  whileTap={{ scale: 0.98 }}
                 >
-                  <Download className="w-4 h-4" />
-                  导出
+                  <Download className={`w-4 h-4 ${isExporting ? 'animate-bounce' : ''}`} />
+                  {isExporting ? '导出中...' : '导出'}
                 </motion.button>
               </div>
             </motion.div>
@@ -134,6 +168,7 @@ export default function StoryboardPage() {
                 onClick={() => router.push("/create/")}
                 className="flex items-center gap-2 px-6 py-3 rounded-xl border border-border text-cream-dim hover:text-cream transition-all"
                 whileHover={{ x: -4 }}
+                whileTap={{ scale: 0.98 }}
               >
                 <ChevronLeft className="w-4 h-4" />
                 返回修改
@@ -143,6 +178,7 @@ export default function StoryboardPage() {
                 onClick={() => router.push("/payment/")}
                 className="px-8 py-3 bg-gradient-to-r from-gold to-gold-bright rounded-xl font-semibold text-void"
                 whileHover={{ scale: 1.02, boxShadow: "0 10px 30px rgba(212,168,75,0.3)" }}
+                whileTap={{ scale: 0.98 }}
               >
                 升级方案
               </motion.button>
