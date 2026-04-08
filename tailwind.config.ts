@@ -22,8 +22,9 @@ const config: Config = {
           bright: "#e8c56a",
         },
         brand: {
-          red: "#c44536",
-          glow: "rgba(196,69,54,0.4)",
+          red: "#7c2d2d",      // 暗红色
+          dark: "#5c1a1a",     // 更深
+          glow: "rgba(124,45,45,0.4)",
         },
         cream: {
           DEFAULT: "#e8e4dc",
