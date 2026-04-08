@@ -5,7 +5,7 @@ const nextConfig = {
   images: {
     unoptimized: true,
   },
-  trailingSlash: true,
+  trailingSlash: true,  // 确保启用，生成 /identity/index.html
 };
 
 module.exports = nextConfig;
