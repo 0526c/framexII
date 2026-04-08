@@ -1,11 +1,11 @@
 "use client";
 
-import { useState } from "react";
-import { motion } from "framer-motion";
+import { useRouter } from "next/navigation";
+import { motion, AnimatePresence } from "framer-motion";
 import GrainBackground from "@/components/GrainBackground";
 import NavHeader from "@/components/NavHeader";
 import PageTransition, { StaggerContainer, StaggerItem } from "@/components/PageTransition";
-import { Check, Sparkles, Building2 } from "lucide-react";
+import { Check, Sparkles, Zap, Building2 } from "lucide-react";
 
 const plans = [
   {
@@ -17,177 +17,187 @@ const plans = [
     features: [
       "每日 3 次生成",
       "最长 3 分钟",
-      "基础分镜模板",
-      "标准导出格式",
+      "基础风格",
+      "标准分辨率",
     ],
     cta: "当前方案",
-    popular: false,
+    featured: false,
+    icon: Sparkles,
   },
   {
     id: "pro",
-    name: "PRO",
-    price: "¥29",
-    period: "月",
-    description: "专业创作者的首选方案",
+    name: "PROFESSIONAL",
+    price: "¥99",
+    period: "/ 月",
+    description: "适合专业创作者与小型团队",
     features: [
       "无限次生成",
       "最长 30 分钟",
-      "高级分镜模板",
-      "4K 导出 + 水印去除",
-      "优先客服支持",
+      "全部风格解锁",
+      "4K 分辨率导出",
+      "优先处理队列",
     ],
-    cta: "立即升级",
-    popular: true,
+    cta: "升级 Pro",
+    featured: true,
+    icon: Zap,
   },
   {
     id: "studio",
     name: "STUDIO",
-    price: "¥99",
-    period: "月",
-    description: "团队与工作室解决方案",
+    price: "¥299",
+    period: "/ 月",
+    description: "适合制作公司与团队",
     features: [
-      "Pro 全部功能",
-      "最长 90 分钟",
-      "团队协作空间",
-      "API 接入权限",
-      "专属客户经理",
+      "5 个团队席位",
+      "API 接入",
+      "自定义模型训练",
+      "专属支持",
+      "白标方案",
     ],
     cta: "联系销售",
-    popular: false,
+    featured: false,
+    icon: Building2,
   },
 ];
 
 export default function PaymentPage() {
-  const [upgrading, setUpgrading] = useState<string | null>(null);
-
-  const handleUpgrade = (planId: string) => {
-    if (planId === "starter") return;
-    
-    setUpgrading(planId);
-    
-    if (planId === "pro") {
-      // 模拟支付流程
-      setTimeout(() => {
-        alert("🎉 感谢支持！\n\nPro 会员激活成功，所有功能已解锁。");
-        setUpgrading(null);
-      }, 1500);
-    } else if (planId === "studio") {
-      // 打开邮箱
-      window.location.href = "mailto:dumccchr@icloud.com?subject=FrameX Studio 企业版咨询";
-      setUpgrading(null);
-    }
-  };
-
-  const handleEnterprise = () => {
-    window.location.href = "mailto:dumccchr@icloud.com?subject=FrameX 企业定制方案咨询";
-  };
+  const router = useRouter();
 
   return (
     <main className="relative min-h-screen overflow-hidden">
       <GrainBackground />
-      
+
       <div className="relative z-10 min-h-screen flex flex-col">
         <NavHeader currentStep={5} totalSteps={5} />
-        
+
         <PageTransition className="flex-1 px-6 lg:px-10 py-8 pt-24">
           <div className="max-w-5xl mx-auto">
+            {/* Header */}
             <motion.div
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               className="text-center mb-12"
             >
               <div className="text-xs font-medium text-gold tracking-wider uppercase mb-2">
-                Step 05 — Upgrade
+                Membership
               </div>
               <h1 className="text-2xl sm:text-3xl font-medium text-cream mb-3">
-                选择你的方案
+                选择你的计划
               </h1>
-              <p className="text-cream-dim text-sm max-w-md mx-auto">
-                解锁更多创作可能，让 FrameX 成为你专业的创作伙伴
+              <p className="text-cream-dim text-sm">
+                解锁更多创作可能
               </p>
             </motion.div>
 
-            <StaggerContainer className="grid grid-cols-1 md:grid-cols-3 gap-6">
+            {/* Pricing Cards */}
+            <StaggerContainer className="grid grid-cols-1 md:grid-cols-3 gap-5">
               {plans.map((plan) => (
                 <StaggerItem key={plan.id}>
                   <motion.div
-                    className={`relative p-6 rounded-2xl border h-full flex flex-col ${
-                      plan.popular
-                        ? "bg-gradient-to-b from-gold/10 to-transparent border-gold/50"
-                        : "bg-white/[0.02] border-border"
+                    className={`relative p-6 rounded-2xl border ${
+                      plan.featured
+                        ? "border-gold bg-gradient-to-b from-gold-dim/40 to-gold-dim/10"
+                        : "border-border bg-gradient-to-b from-white/[0.03] to-white/[0.01]"
                     }`}
-                    whileHover={{ y: -8, scale: 1.02 }}
-                    transition={{ duration: 0.3 }}
+                    whileHover={{ 
+                      y: -6,
+                      boxShadow: plan.featured 
+                        ? "0 20px 40px rgba(212,168,75,0.2)" 
+                        : "0 20px 40px rgba(0,0,0,0.2)"
+                    }}
                   >
-                    {plan.popular && (
-                      <div className="absolute -top-3 left-1/2 -translate-x-1/2 px-3 py-1 rounded-full bg-gold text-void text-xs font-semibold flex items-center gap-1">
-                        <Sparkles className="w-3 h-3" />
-                        最受欢迎
-                      </div>
+                    {/* Featured badge */}
+                    
+                    {plan.featured && (
+                      <motion.div
+                        initial={{ opacity: 0, y: -10 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        className="absolute -top-px left-1/2 -translate-x-1/2 px-4 py-1 bg-gold rounded-b-lg text-xs font-bold text-void"
+                      >
+                        推荐
+                      </motion.div>
                     )}
 
                     <div className="mb-6">
-                      <h3 className="text-lg font-medium text-cream mb-2">{plan.name}</h3>
-                      <div className="flex items-baseline gap-1 mb-2">
-                        <span className="text-3xl font-bold text-gold">{plan.price}</span>
-                        {plan.period !== "永久" && (
-                          <span className="text-cream-dim text-sm">/{plan.period}</span>
-                        )}
+                      <div className="w-12 h-12 rounded-xl bg-gold-dim flex items-center justify-center mb-4">
+                        <plan.icon className="w-6 h-6 text-gold" />
                       </div>
+                      
+                      <h3 className="text-lg font-semibold text-gold mb-2">{plan.name}</h3>
+                      
+                      <div className="flex items-baseline gap-1 mb-2">
+                        <span className="text-3xl font-light text-cream">{plan.price}</span>
+                        <span className="text-cream-dim text-sm">{plan.period}</span>
+                      </div>
+                      
                       <p className="text-sm text-cream-dim">{plan.description}</p>
                     </div>
 
-                    <ul className="space-y-3 mb-8 flex-1">
-                      {plan.features.map((feature, i) => (
-                        <li key={i} className="flex items-start gap-3 text-sm text-cream">
-                          <Check className={`w-4 h-4 mt-0.5 flex-shrink-0 ${plan.popular ? "text-gold" : "text-cream-dim"}`} />
-                          {feature}
-                        </li>
-                      ))}
-                    </ul>
+                    <div className="border-t border-border pt-6 mb-6">
+                      <ul className="space-y-3">
+                        {plan.features.map((feature, i) => (
+                          <li key={i} className="flex items-center gap-3 text-sm text-cream">
+                            <Check className="w-4 h-4 text-gold flex-shrink-0" />
+                            {feature}
+                          </li>
+                        ))}
+                      </ul>
+                    </div>
 
                     <motion.button
-                      onClick={() => handleUpgrade(plan.id)}
-                      disabled={plan.id === "starter" || upgrading === plan.id}
-                      className={`w-full py-3 rounded-xl font-semibold transition-all ${
-                        plan.popular
-                          ? "bg-gradient-to-r from-gold to-gold-bright text-void"
-                          : plan.id === "starter"
-                          ? "bg-white/10 text-cream cursor-default"
-                          : "border border-gold/50 text-gold hover:bg-gold/10"
+                      className={`w-full py-3 rounded-xl font-semibold text-sm transition-all ${
+                        plan.featured
+                          ? "bg-brand-red hover:bg-brand-red-hover text-cream vibe-hover glow-red"
+                          : "border border-border text-cream hover:border-brand-red/50 hover:bg-brand-subtle"
                       }`}
-                      whileHover={plan.id !== "starter" && !upgrading ? { scale: 1.02 } : {}}
-                      whileTap={plan.id !== "starter" && !upgrading ? { scale: 0.98 } : {}}
+                      whileHover={{ scale: 1.02 }}
+                      whileTap={{ scale: 0.98 }}
                     >
-                      {upgrading === plan.id ? "处理中..." : plan.cta}
+                      {plan.cta}
                     </motion.button>
                   </motion.div>
                 </StaggerItem>
               ))}
             </StaggerContainer>
 
+            {/* FAQ hint */}
             <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
               transition={{ delay: 0.4 }}
-              className="mt-12 p-6 rounded-2xl border border-border bg-white/[0.02] flex flex-col sm:flex-row items-center justify-between gap-4"
+              className="text-center mt-12 text-sm text-cream-dim"
             >
-              <div className="flex items-center gap-4">
-                <div className="w-12 h-12 rounded-xl bg-gold/10 flex items-center justify-center">
-                  <Building2 className="w-6 h-6 text-gold" />
-                </div>
-                <div>
-                  <h3 className="font-medium text-cream">企业定制方案</h3>
-                  <p className="text-sm text-cream-dim">专属部署、定制训练、私有 API</p>
-                </div>
-              </div>
-              <motion.button
-                onClick={handleEnterprise}
-                className="px-6 py-3 rounded-xl border border-gold/50 text-gold hover:bg-gold/10 transition-all"
-                whileHover={{ scale: 1.02 }}
-                whileTap={{ scale: 0.98 }}
+              有问题？
+              <motion.a 
+                href="mailto:dumccchr@icloud.com"
+                className="text-gold hover:text-gold-bright ml-1"
+                whileHover={{ textDecoration: "underline" }}
               >
                 联系我们
+              </motion.a>
+            </motion.div>
+
+            {/* Navigation */}
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ delay: 0.5 }}
+              className="flex justify-between mt-12"
+            >
+              <motion.button
+                onClick={() => router.push("/storyboard/")}
+                className="text-sm text-cream-dim hover:text-cream transition-colors"
+                whileHover={{ x: -4 }}
+              >
+                ← 返回分镜
+              </motion.button>
+
+              <motion.button
+                onClick={() => router.push("/profile/")}
+                className="text-sm text-cream-dim hover:text-cream transition-colors"
+                whileHover={{ x: 4 }}
+              >
+                个人中心 →
               </motion.button>
             </motion.div>
           </div>
